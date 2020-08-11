@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -22,7 +21,6 @@ public class RegistrationActivity extends AppCompatActivity {
     private EditText pass;
     private EditText rpass;
     private FirebaseAuth mAuth;
-    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,13 +31,11 @@ public class RegistrationActivity extends AppCompatActivity {
         rpass = findViewById(R.id.Registration_RepPassword);
         mAuth = FirebaseAuth.getInstance();
         ra = this;
-        mProgressBar = findViewById(R.id.progressBar);
         Button bt = findViewById(R.id.su);
         bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (pass.getText().toString().equals(rpass.getText().toString())) {
-                    /* mProgressBar.setVisibility(View.VISIBLE);*/
                     mAuth.createUserWithEmailAndPassword(mail.getText().toString(), pass.getText().toString()).addOnCompleteListener(
                             new OnCompleteListener<AuthResult>() {
                                 @Override
