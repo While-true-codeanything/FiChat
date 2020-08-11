@@ -23,17 +23,22 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(this, LoginActivity.class));
             this.finish();
         }else{
+            currentUser.reload();
             setContentView(R.layout.activity_main);
             TextView tv = findViewById(R.id.YrEmail);
-            tv.setText("Your Emal: "+currentUser.getEmail());
-            tv= findViewById(R.id.Qt);
+            tv.setText("Your Emal: " + currentUser.getEmail());
+            tv = findViewById(R.id.Qt);
             tv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    mAuth.signOut();
                     startActivity(new Intent(ma, LoginActivity.class));
                     ma.finish();
                 }
             });
+            tv = findViewById(R.id.YrVer);
+
+            tv.setText("Verified: " + currentUser.isEmailVerified());
         }
     }
 }

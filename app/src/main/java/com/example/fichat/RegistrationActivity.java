@@ -42,11 +42,13 @@ public class RegistrationActivity extends AppCompatActivity {
                                 public void onComplete(@NonNull Task<AuthResult> task) {
 
                                     if (task.isSuccessful()) {
-                                        startActivity(new Intent(ra, MainActivity.class));
+                                        ;
                                         Toast.makeText(ra, "Successful", Toast.LENGTH_LONG);
                                         finish();
+                                        mAuth.getCurrentUser().sendEmailVerification();
+                                        startActivity(new Intent(ra, MainActivity.class));
                                     } else {
-                                        Toast.makeText(ra, task.getException().getLocalizedMessage(), Toast.LENGTH_LONG);
+                                        Toast.makeText(ra, task.getException().getLocalizedMessage(), Toast.LENGTH_LONG).show();
                                     }
 
                                 }
