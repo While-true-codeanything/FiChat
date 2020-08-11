@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "187300501845",
+    "firebase_url": "https://fichat-77d74.firebaseio.com",
+    "project_id": "fichat-77d74",
+    "storage_bucket": "fichat-77d74.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:187300501845:android:1457a7c4e7c732ceeab7dc",
+        "android_client_info": {
+          "package_name": "com.example.fichat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "187300501845-63bjoneduija5jf77v0v0tcdklb454eg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUBRybjjRwAq_Zi0_JBbSr9Qc5y-TrMhM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "187300501845-63bjoneduija5jf77v0v0tcdklb454eg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
