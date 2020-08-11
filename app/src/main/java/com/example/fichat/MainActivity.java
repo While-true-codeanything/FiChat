@@ -4,15 +4,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private MainActivity ma;
+    private TextView tv;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,10 +27,20 @@ public class MainActivity extends AppCompatActivity {
         if (currentUser == null) {
             startActivity(new Intent(this, LoginActivity.class));
             this.finish();
-        }else{
-            currentUser.reload();
+        }else {
+            currentUser.reload().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        tv = findViewById(R.id.YrVer);
+                        tv.setText("Verified: " + mAuth.getCurrentUser().isEmailVerified());
+                    } else {
+                        Toast.makeText(ma, "Some problems with updating your account. Try again later", Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
             setContentView(R.layout.activity_main);
-            TextView tv = findViewById(R.id.YrEmail);
+            tv = findViewById(R.id.YrEmail);
             tv.setText("Your Emal: " + currentUser.getEmail());
             tv = findViewById(R.id.Qt);
             tv.setOnClickListener(new View.OnClickListener() {

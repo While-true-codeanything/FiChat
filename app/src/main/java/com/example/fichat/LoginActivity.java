@@ -16,6 +16,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private LoginActivity la;
@@ -43,23 +46,40 @@ public class LoginActivity extends AppCompatActivity {
         sg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String Login=mail.getText().toString();
-                String Password=pass.getText().toString();
-                FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-                firebaseAuth.signInWithEmailAndPassword(Login, Password).addOnCompleteListener(
-                        new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (mail.getText().length() == 0 || pass.getText().length() == 0) {
+                    Toast.makeText(la, "Password or login must not be null", Toast.LENGTH_LONG).show();
+                } else {
+                    if (isValidEmail(mail.getText().toString())) {
+                        String Login = mail.getText().toString();
+                        String Password = pass.getText().toString();
+                        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+                        firebaseAuth.signInWithEmailAndPassword(Login, Password).addOnCompleteListener(
+                                new OnCompleteListener<AuthResult>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<AuthResult> task) {
 
-                                if (task.isSuccessful()) {
-                                    startActivity(new Intent(la, MainActivity.class));
-                                    finish();
-                                } else {
-                                    Toast.makeText(la, task.getException().getLocalizedMessage(), Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        });
+                                        if (task.isSuccessful()) {
+                                            startActivity(new Intent(la, MainActivity.class));
+                                            finish();
+                                        } else {
+                                            Toast.makeText(la, task.getException().getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+                                });
+                    } else {
+                        Toast.makeText(la, "Enter the correct email address", Toast.LENGTH_LONG).show();
+                    }
+                }
             }
         });
+    }
+
+    private boolean isValidEmail(String email) {
+
+        String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
+        Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+
     }
 }
