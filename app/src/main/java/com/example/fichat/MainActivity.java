@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
                         tv = findViewById(R.id.YrVer);
-                        tv.setText("Verified: " + mAuth.getCurrentUser().isEmailVerified());
+                        tv.setText(String.format("Verified: %s", mAuth.getCurrentUser().isEmailVerified()));
                     } else {
                         Toast.makeText(ma, "Some problems with updating your account. Try again later", Toast.LENGTH_LONG).show();
                     }
@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
             });
             setContentView(R.layout.activity_main);
             tv = findViewById(R.id.YrEmail);
-            tv.setText("Your Emal: " + currentUser.getEmail());
+            tv.setText(String.format("Your Emal: %s", currentUser.getEmail()));
             tv = findViewById(R.id.Qt);
             tv.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -10,9 +10,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -25,6 +27,8 @@ public class LoginActivity extends AppCompatActivity {
     private EditText mail;
     private EditText pass;
     private TextView reg;
+    private ConstraintLayout lay;
+    private Snackbar snackbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +37,9 @@ public class LoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mail = findViewById(R.id.LoginEmail);
         pass = findViewById(R.id.LoginPassword);
+        lay = findViewById(R.id.loginlay);
         la = this;
-        reg=findViewById(R.id.reg);
+        reg = findViewById(R.id.reg);
         reg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -42,7 +47,7 @@ public class LoginActivity extends AppCompatActivity {
                 finish();
             }
         });
-        Button sg=findViewById(R.id.Sign);
+        Button sg = findViewById(R.id.Sign);
         sg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -67,7 +72,31 @@ public class LoginActivity extends AppCompatActivity {
                                     }
                                 });
                     } else {
-                        Toast.makeText(la, "Enter the correct email address", Toast.LENGTH_LONG).show();
+                        /*new AlertDialog.Builder(LoginActivity.this)
+                                .setTitle("Sorry")
+                                .setMessage("Enter the correct email address ")
+                                .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        dialogInterface.dismiss();
+                                    }
+                                })
+                                .create()
+                                .show();*/
+                       /* Snackbar.make(
+                                lay,
+                                "Enter the correct email address",
+                                Snackbar.LENGTH_LONG
+                        ).show();*/
+                        snackbar = Snackbar
+                                .make(lay, "Enter the correct email address", Snackbar.LENGTH_LONG)
+                                .setAction("Ok", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        snackbar.dismiss();
+                                    }
+                                });
+                        snackbar.show();
                     }
                 }
             }
