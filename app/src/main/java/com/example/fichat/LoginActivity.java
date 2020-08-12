@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +17,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (mail.getText().length() == 0 || pass.getText().length() == 0) {
-                    Toast.makeText(la, "Password or login must not be null", Toast.LENGTH_LONG).show();
+                    showmessage("Password or login must not be null");
                 } else {
                     if (isValidEmail(mail.getText().toString())) {
                         String Login = mail.getText().toString();
@@ -67,36 +67,12 @@ public class LoginActivity extends AppCompatActivity {
                                             startActivity(new Intent(la, MainActivity.class));
                                             finish();
                                         } else {
-                                            Toast.makeText(la, task.getException().getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                                            showmessage(Objects.requireNonNull(task.getException()).getLocalizedMessage());/**/
                                         }
                                     }
                                 });
                     } else {
-                        /*new AlertDialog.Builder(LoginActivity.this)
-                                .setTitle("Sorry")
-                                .setMessage("Enter the correct email address ")
-                                .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        dialogInterface.dismiss();
-                                    }
-                                })
-                                .create()
-                                .show();*/
-                       /* Snackbar.make(
-                                lay,
-                                "Enter the correct email address",
-                                Snackbar.LENGTH_LONG
-                        ).show();*/
-                        snackbar = Snackbar
-                                .make(lay, "Enter the correct email address", Snackbar.LENGTH_LONG)
-                                .setAction("Ok", new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        snackbar.dismiss();
-                                    }
-                                });
-                        snackbar.show();
+                        showmessage("Enter the correct email address");
                     }
                 }
             }
@@ -110,5 +86,17 @@ public class LoginActivity extends AppCompatActivity {
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
 
+    }
+
+    private void showmessage(String message) {
+        snackbar = Snackbar
+                .make(lay, message, Snackbar.LENGTH_LONG)
+                .setAction("Ok", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        snackbar.dismiss();
+                    }
+                });
+        snackbar.show();
     }
 }

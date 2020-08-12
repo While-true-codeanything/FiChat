@@ -9,12 +9,15 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,6 +27,8 @@ public class RegistrationActivity extends AppCompatActivity {
     private EditText pass;
     private EditText rpass;
     private FirebaseAuth mAuth;
+    private ConstraintLayout lay;
+    private Snackbar snackbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +38,7 @@ public class RegistrationActivity extends AppCompatActivity {
         pass = findViewById(R.id.Registration_Password);
         rpass = findViewById(R.id.Registration_RepPassword);
         mAuth = FirebaseAuth.getInstance();
+        lay = findViewById(R.id.reglay);
         ra = this;
         Button bt = findViewById(R.id.su);
         bt.setOnClickListener(new View.OnClickListener() {
@@ -40,7 +46,7 @@ public class RegistrationActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (pass.getText().toString().equals(rpass.getText().toString())) {
                     if (mail.getText().length() == 0 || pass.getText().length() == 0 || rpass.getText().length() == 0) {
-                        Toast.makeText(ra, "Fill in all fields", Toast.LENGTH_LONG).show();
+                        showmessage("Fill in all fields");
                     } else {
                         if (isValidEmail(mail.getText().toString())) {
                             if (pass.getText().length() < 6) {
@@ -51,25 +57,25 @@ public class RegistrationActivity extends AppCompatActivity {
 
                                                 if (task.isSuccessful()) {
                                                     ;
-                                                    Toast.makeText(ra, "Successful", Toast.LENGTH_LONG);
+                                                    Toast.makeText(ra, "Successful", Toast.LENGTH_LONG).show();
                                                     finish();
-                                                    mAuth.getCurrentUser().sendEmailVerification();
+                                                    Objects.requireNonNull(mAuth.getCurrentUser()).sendEmailVerification();
                                                     startActivity(new Intent(ra, MainActivity.class));
                                                 } else {
-                                                    Toast.makeText(ra, task.getException().getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                                                    showmessage(Objects.requireNonNull(task.getException()).getLocalizedMessage());
                                                 }
 
                                             }
                                         });
                             } else {
-                                Toast.makeText(ra, "Password must not be less than 6 symbols", Toast.LENGTH_LONG).show();
+                                showmessage("Password must not be less than 6 symbols");
                             }
                         } else {
-                            Toast.makeText(ra, "Enter the correct email address", Toast.LENGTH_LONG).show();
+                            showmessage("Enter the correct email address");
                         }
                     }
                 } else {
-                    Toast.makeText(ra, "Passwords don't match! Try again", Toast.LENGTH_LONG).show();
+                    showmessage("Passwords don't match! Check again");
                 }
             }
         });
@@ -82,5 +88,17 @@ public class RegistrationActivity extends AppCompatActivity {
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
 
+    }
+
+    private void showmessage(String message) {
+        snackbar = Snackbar
+                .make(lay, message, Snackbar.LENGTH_LONG)
+                .setAction("Ok", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        snackbar.dismiss();
+                    }
+                });
+        snackbar.show();
     }
 }
