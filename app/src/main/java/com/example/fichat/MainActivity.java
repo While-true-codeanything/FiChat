@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
             });
             tv = findViewById(R.id.YrVer);
 
-            tv.setText("Verified: " + currentUser.isEmailVerified());
+            tv.setText(String.format("Verified: %s", currentUser.isEmailVerified()));
         }
     }
 }
