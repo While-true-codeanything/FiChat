@@ -38,7 +38,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
             holder.user.setText(current.getMessageUser());
         }
         holder.text.setText(current.getMessageText());
-        holder.time.setText(String.format("%d", current.getMessageTime()));
+        holder.time.setText(current.getMessageTime());
     }
 
     @Override
