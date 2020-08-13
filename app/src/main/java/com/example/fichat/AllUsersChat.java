@@ -62,6 +62,7 @@ public class AllUsersChat extends Fragment {
                 m.datachange(messagedata);
 
                 allmessagelist.getAdapter().notifyDataSetChanged();
+                allmessagelist.scrollToPosition(allmessagelist.getAdapter().getItemCount() - 1);
             }
 
             @Override
