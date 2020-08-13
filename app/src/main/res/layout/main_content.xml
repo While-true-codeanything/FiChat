@@ -31,7 +31,7 @@
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/floatingActionButton"
                 android:layout_width="133dp"
-                android:layout_height="1333dp"
+                android:layout_height="107dp"
                 android:layout_weight="1"
                 android:clickable="true"
                 app:srcCompat="@android:drawable/ic_menu_send" />

@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
             });
             setContentView(R.layout.activity_main);
             tv = findViewById(R.id.YrEmail);
-            tv.setText(String.format("Your Emal: %s", currentUser.getEmail()));
+            tv.setText(String.format("%sYour name: %s", String.format("Your Emal: %s", currentUser.getEmail()), currentUser.getDisplayName()));
             tv = findViewById(R.id.Qt);
             tv.setOnClickListener(new View.OnClickListener() {
                 @Override
