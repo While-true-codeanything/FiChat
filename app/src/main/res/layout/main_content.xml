@@ -4,6 +4,7 @@
     android:id="@+id/chatlay"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#1EF5D400"
     android:orientation="vertical">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -30,7 +31,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:hint="Enter your message" />
+                android:background="@drawable/back"
+                android:hint="Enter your message"
+                android:padding="5dp" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/SendButton"
