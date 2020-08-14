@@ -35,6 +35,7 @@ public class Profile extends Fragment {
     private TextView tv;
     private boolean EditingEmail;
     private Snackbar snackbar;
+    private ImageView imageView;
     static final int AVATAR_REQUEST = 66;
     StorageReference storage;
 
@@ -52,30 +53,29 @@ public class Profile extends Fragment {
     public void onStart() {
         super.onStart();
         mAuth.getCurrentUser().reload();
+        imageView = getActivity().findViewById(R.id.avatar);
         edt = getActivity().findViewById(R.id.Name);
         edt.setText(mAuth.getCurrentUser().getDisplayName());
         tv = getActivity().findViewById(R.id.Ng);
-        final ImageView imageView2 = getActivity().findViewById(R.id.avatar);
-        /*storage.child(mAuth.getCurrentUser().getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                Glide
-                        .with(getContext())
-                        .load(uri)
-                        .into(imageView2);
-            }
-        });*/
-
-        FirebaseStorage storagef = FirebaseStorage.getInstance();
-        storage = storagef.getReference();
+        storage = FirebaseStorage.getInstance().getReference();
         storage.child(mAuth.getCurrentUser().getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                if (imageView2.getDrawable() == null) {
+                if (imageView.getDrawable() == null) {
                     Glide
                             .with(getContext())
                             .load(uri)
-                            .into(imageView2);
+                            .into(imageView);
+                }
+            }
+        });
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (imageView.getDrawable() != null) {
+                    Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                    photoPickerIntent.setType("image/*");
+                    startActivityForResult(photoPickerIntent, AVATAR_REQUEST);
                 }
             }
         });
@@ -135,15 +135,6 @@ public class Profile extends Fragment {
                     tv.setText(Html.fromHtml("<u>Save</u>"));
                     EditingEmail = true;
                 }
-            }
-        });
-        ImageView avatar = getActivity().findViewById(R.id.avatar);
-        avatar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, AVATAR_REQUEST);
             }
         });
     }
