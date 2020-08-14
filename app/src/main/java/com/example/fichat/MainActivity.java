@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
                             setTitle("FiChat");
                             return true;
                         case R.id.navigation_profile:
-                            loadFragment(new Profile());
+                            loadFragment(new Profile(mAuth));
                             setTitle("Profile");
                             return true;
                     }

@@ -68,7 +68,7 @@ public class AllUsersChat extends Fragment {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 snackbar = Snackbar
-                        .make(lay, databaseError.getMessage(), Snackbar.LENGTH_LONG)
+                        .make((LinearLayout) getActivity().findViewById(R.id.prf), databaseError.getMessage(), Snackbar.LENGTH_LONG)
                         .setAction("Ok", new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
