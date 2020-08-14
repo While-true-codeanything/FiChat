@@ -51,7 +51,7 @@ public class AllUsersChat extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 ArrayList<Message> messagedata = new ArrayList<Message>();
-                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                for (DataSnapshot data : dataSnapshot.child("AllUsersChat").getChildren()) {
                     //Getting User object from dataSnapshot
                     Message mes = data.getValue(Message.class);
                     messagedata.add(mes);
@@ -83,7 +83,7 @@ public class AllUsersChat extends Fragment {
             @Override
             public void onClick(View view) {
                 EditText input = (EditText) getActivity().findViewById(R.id.message);
-                myRef.push()
+                myRef.child("AllUsersChat").push()
                         .setValue(new Message(input.getText().toString(),
                                 FirebaseAuth.getInstance()
                                         .getCurrentUser()
