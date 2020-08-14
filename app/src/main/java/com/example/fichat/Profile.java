@@ -1,23 +1,29 @@
 package com.example.fichat;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.UserProfileChangeRequest;
+
+import static android.app.Activity.RESULT_OK;
 
 public class Profile extends Fragment {
     private FirebaseAuth mAuth;
@@ -25,6 +31,7 @@ public class Profile extends Fragment {
     private TextView tv;
     private boolean EditingEmail;
     private Snackbar snackbar;
+    static final int AVATAR_REQUEST = 66;
 
     public Profile(FirebaseAuth mAuth) {
         this.mAuth = mAuth;
@@ -101,5 +108,33 @@ public class Profile extends Fragment {
                 }
             }
         });
+        ImageView avatar = getActivity().findViewById(R.id.avatar);
+        avatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                photoPickerIntent.setType("image/*");
+                startActivityForResult(photoPickerIntent, AVATAR_REQUEST);
+            }
+        });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
+        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+
+        Bitmap bitmap = null;
+        ImageView imageView = getActivity().findViewById(R.id.avatar);
+
+        switch (requestCode) {
+            case AVATAR_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    Uri selectedImage = imageReturnedIntent.getData();
+                    Glide
+                            .with(this)
+                            .load(selectedImage)
+                            .into(imageView);
+                }
+        }
     }
 }
