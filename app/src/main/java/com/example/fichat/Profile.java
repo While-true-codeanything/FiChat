@@ -17,12 +17,15 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -52,10 +55,30 @@ public class Profile extends Fragment {
         edt = getActivity().findViewById(R.id.Name);
         edt.setText(mAuth.getCurrentUser().getDisplayName());
         tv = getActivity().findViewById(R.id.Ng);
+        final ImageView imageView2 = getActivity().findViewById(R.id.avatar);
+        /*storage.child(mAuth.getCurrentUser().getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Glide
+                        .with(getContext())
+                        .load(uri)
+                        .into(imageView2);
+            }
+        });*/
+
         FirebaseStorage storagef = FirebaseStorage.getInstance();
         storage = storagef.getReference();
-        ImageView imageView = getActivity().findViewById(R.id.avatar);
-        Glide.with(getContext()).load(mAuth.getCurrentUser().getPhotoUrl()).into(imageView);
+        storage.child(mAuth.getCurrentUser().getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                if (imageView2.getDrawable() == null) {
+                    Glide
+                            .with(getContext())
+                            .load(uri)
+                            .into(imageView2);
+                }
+            }
+        });
         tv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -134,32 +157,31 @@ public class Profile extends Fragment {
         switch (requestCode) {
             case AVATAR_REQUEST:
                 if (resultCode == RESULT_OK) {
-                    final Uri selectedImage = imageReturnedIntent.getData();
-                    Glide.with(this).load(selectedImage).into(imageView);
-                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                            .setPhotoUri(selectedImage)
-                            .build();
-                    mAuth.getCurrentUser().updateProfile(profileUpdates)
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        Toast.makeText(getContext(), "Avatar Changed", Toast.LENGTH_LONG).show();
-                                    } else {
-                                        snackbar = Snackbar
-                                                .make(getActivity().findViewById(R.id.prf), "Error! Please try again late!", Snackbar.LENGTH_LONG)
-                                                .setAction("Ok", new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View view) {
-                                                        snackbar.dismiss();
-                                                    }
-                                                });
-                                        snackbar.show();
-                                    }
-                                }
-                            });
+                    Uri selectedImage = imageReturnedIntent.getData();
+                    Glide
+                            .with(this)
+                            .load(selectedImage)
+                            .into(imageView);
                 }
+                storage.child(mAuth.getCurrentUser().getUid()).putFile(imageReturnedIntent.getData()).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        snackbar = Snackbar
+                                .make(getActivity().findViewById(R.id.prf), exception.getMessage(), Snackbar.LENGTH_LONG)
+                                .setAction("Ok", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        snackbar.dismiss();
+                                    }
+                                });
+                        snackbar.show();
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Toast.makeText(getContext(), "Avatar changed!", Toast.LENGTH_LONG).show();
+                    }
+                });
         }
-
     }
 }
