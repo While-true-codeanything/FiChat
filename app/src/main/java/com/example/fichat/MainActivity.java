@@ -1,6 +1,7 @@
 package com.example.fichat;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         mAuth = FirebaseAuth.getInstance();
         ma = this;
         final FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -58,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
                 public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                     switch (item.getItemId()) {
                         case R.id.navigation_chats:
-                            loadFragment(new Fragment());
+                            loadFragment(new ChatFragment());
                             setTitle("FiChat");
                             return true;
                         case R.id.navigation_group:
@@ -73,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
                     return false;
                 }
             });
+            navigation.setSelectedItemId(R.id.navigation_group);
           /*  myRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
