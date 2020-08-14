@@ -1,7 +1,6 @@
 package com.example.fichat;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
@@ -22,6 +21,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -32,6 +33,7 @@ public class Profile extends Fragment {
     private boolean EditingEmail;
     private Snackbar snackbar;
     static final int AVATAR_REQUEST = 66;
+    StorageReference storage;
 
     public Profile(FirebaseAuth mAuth) {
         this.mAuth = mAuth;
@@ -50,6 +52,10 @@ public class Profile extends Fragment {
         edt = getActivity().findViewById(R.id.Name);
         edt.setText(mAuth.getCurrentUser().getDisplayName());
         tv = getActivity().findViewById(R.id.Ng);
+        FirebaseStorage storagef = FirebaseStorage.getInstance();
+        storage = storagef.getReference();
+        ImageView imageView = getActivity().findViewById(R.id.avatar);
+        Glide.with(getContext()).load(mAuth.getCurrentUser().getPhotoUrl()).into(imageView);
         tv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -123,18 +129,37 @@ public class Profile extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
         super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
 
-        Bitmap bitmap = null;
         ImageView imageView = getActivity().findViewById(R.id.avatar);
 
         switch (requestCode) {
             case AVATAR_REQUEST:
                 if (resultCode == RESULT_OK) {
-                    Uri selectedImage = imageReturnedIntent.getData();
-                    Glide
-                            .with(this)
-                            .load(selectedImage)
-                            .into(imageView);
+                    final Uri selectedImage = imageReturnedIntent.getData();
+                    Glide.with(this).load(selectedImage).into(imageView);
+                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                            .setPhotoUri(selectedImage)
+                            .build();
+                    mAuth.getCurrentUser().updateProfile(profileUpdates)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(getContext(), "Avatar Changed", Toast.LENGTH_LONG).show();
+                                    } else {
+                                        snackbar = Snackbar
+                                                .make(getActivity().findViewById(R.id.prf), "Error! Please try again late!", Snackbar.LENGTH_LONG)
+                                                .setAction("Ok", new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View view) {
+                                                        snackbar.dismiss();
+                                                    }
+                                                });
+                                        snackbar.show();
+                                    }
+                                }
+                            });
                 }
         }
+
     }
 }
