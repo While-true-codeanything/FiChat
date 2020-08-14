@@ -27,6 +27,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import static android.app.Activity.RESULT_OK;
 
 public class Profile extends Fragment {
@@ -125,10 +128,22 @@ public class Profile extends Fragment {
             @Override
             public void onClick(View view) {
                 if (EditingEmail) {
-                    mAuth.getCurrentUser().verifyBeforeUpdateEmail(edt.getText().toString());
-                    tv.setText(Html.fromHtml("<u>Reset Email</u>"));
-                    edt.setEnabled(false);
-                    EditingEmail = false;
+                    if (isValidEmail(edt.getText().toString())) {
+                        mAuth.getCurrentUser().verifyBeforeUpdateEmail(edt.getText().toString());
+                        tv.setText(Html.fromHtml("<u>Reset Email</u>"));
+                        edt.setEnabled(false);
+                        EditingEmail = false;
+                    } else {
+                        snackbar = Snackbar
+                                .make(getActivity().findViewById(R.id.prf), "Enter correct email!", Snackbar.LENGTH_LONG)
+                                .setAction("Ok", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        snackbar.dismiss();
+                                    }
+                                });
+                        snackbar.show();
+                    }
                 } else {
                     edt = getActivity().findViewById(R.id.Email);
                     edt.setEnabled(true);
@@ -174,5 +189,14 @@ public class Profile extends Fragment {
                     }
                 });
         }
+    }
+
+    private boolean isValidEmail(String email) {
+
+        String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
+        Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+
     }
 }

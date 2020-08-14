@@ -1,6 +1,9 @@
 package com.example.fichat;
 
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -12,11 +15,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -68,10 +75,30 @@ public class RegistrationActivity extends AppCompatActivity {
                                                                 @Override
                                                                 public void onComplete(@NonNull Task<Void> task) {
                                                                     if (task.isSuccessful()) {
-                                                                        Toast.makeText(ra, "Successful", Toast.LENGTH_LONG).show();
-                                                                        finish();
-                                                                        Objects.requireNonNull(mAuth.getCurrentUser()).sendEmailVerification();
-                                                                        startActivity(new Intent(ra, MainActivity.class));
+                                                                        Resources resources = ra.getResources();
+                                                                        Uri uri = new Uri.Builder().scheme(ContentResolver.SCHEME_ANDROID_RESOURCE).authority(resources.getResourcePackageName(R.drawable.logo)).appendPath(resources.getResourceTypeName(R.drawable.logo)).appendPath(resources.getResourceEntryName(R.drawable.logo)).build();
+                                                                        FirebaseStorage.getInstance().getReference().child(mAuth.getCurrentUser().getUid()).putFile(uri).addOnFailureListener(new OnFailureListener() {
+                                                                            @Override
+                                                                            public void onFailure(@NonNull Exception exception) {
+                                                                                snackbar = Snackbar
+                                                                                        .make(lay, exception.getMessage(), Snackbar.LENGTH_LONG)
+                                                                                        .setAction("Ok", new View.OnClickListener() {
+                                                                                            @Override
+                                                                                            public void onClick(View view) {
+                                                                                                snackbar.dismiss();
+                                                                                            }
+                                                                                        });
+                                                                                snackbar.show();
+                                                                            }
+                                                                        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                                                            @Override
+                                                                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                                                                Toast.makeText(ra, "Successful", Toast.LENGTH_LONG).show();
+                                                                                finish();
+                                                                                Objects.requireNonNull(mAuth.getCurrentUser()).sendEmailVerification();
+                                                                                startActivity(new Intent(ra, MainActivity.class));
+                                                                            }
+                                                                        });
                                                                     } else {
                                                                         showmessage(Objects.requireNonNull(task.getException()).getLocalizedMessage());
                                                                     }
