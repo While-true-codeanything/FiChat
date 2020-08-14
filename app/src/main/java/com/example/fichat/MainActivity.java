@@ -2,38 +2,31 @@ package com.example.fichat;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
-    private DatabaseReference myRef;
     private MainActivity ma;
-    private TextView tv;
-    private FloatingActionButton send;
-    private Snackbar snackbar;
-    private RecyclerView allmessagelist;
+
+    private BottomNavigationView navigation;
+
+    public void loadFragment(Fragment fragment) {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.place, fragment);
+        ft.commit();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,11 +49,30 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             });
-            setContentView(R.layout.main_content);
-            allmessagelist = findViewById(R.id.list);
-            final LinearLayout lay = findViewById(R.id.chatlay);
-            myRef = FirebaseDatabase.getInstance().getReference();
-            allmessagelist.setAdapter(new MessagesAdapter(currentUser.getDisplayName(), new ArrayList<Message>()));
+            setContentView(R.layout.activity_main);
+            navigation = findViewById(R.id.navigation);
+            loadFragment(new AllUsersChat(currentUser));
+            navigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                    switch (item.getItemId()) {
+                        case R.id.navigation_chats:
+                            loadFragment(new Fragment());
+                            setTitle("FiChat");
+                            return true;
+                        case R.id.navigation_group:
+                            loadFragment(new AllUsersChat(currentUser));
+                            setTitle("FiChat");
+                            return true;
+                        case R.id.navigation_profile:
+                            loadFragment(new Profile(mAuth));
+                            setTitle("Profile");
+                            return true;
+                    }
+                    return false;
+                }
+            });
           /*  myRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -85,50 +97,6 @@ public class MainActivity extends AppCompatActivity {
                     snackbar.show();
                 }
             });*/
-            myRef.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    ArrayList<Message> messagedata = new ArrayList<Message>();
-                    for (DataSnapshot data : dataSnapshot.getChildren()) {
-                        //Getting User object from dataSnapshot
-                        Message mes = data.getValue(Message.class);
-                        messagedata.add(mes);
-                    }
-                    /*Toast.makeText(ma,messagedata.get(messagedata.size()).getMessageText(),Toast.LENGTH_LONG).show();*/
-                    /*allmessagelist.setAdapter(new MessagesAdapter(currentUser.getDisplayName(),messagedata));*/
-                    MessagesAdapter m = (MessagesAdapter) allmessagelist.getAdapter();
-                    m.datachange(messagedata);
-
-                    allmessagelist.getAdapter().notifyDataSetChanged();
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    snackbar = Snackbar
-                            .make(lay, databaseError.getMessage(), Snackbar.LENGTH_LONG)
-                            .setAction("Ok", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    snackbar.dismiss();
-                                }
-                            });
-                    snackbar.show();
-                }
-            });
-            send = findViewById(R.id.SendButton);
-            send.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    EditText input = (EditText) findViewById(R.id.message);
-                    myRef.push()
-                            .setValue(new Message(input.getText().toString(),
-                                    FirebaseAuth.getInstance()
-                                            .getCurrentUser()
-                                            .getDisplayName())
-                            );
-                    input.setText("");
-                }
-            });
            /* tv = findViewById(R.id.YrEmail);
             tv.setText(String.format("%sYour name: %s", String.format("Your Emal: %s", currentUser.getEmail()), currentUser.getDisplayName()));
             tv = findViewById(R.id.Qt);

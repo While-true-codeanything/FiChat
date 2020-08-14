@@ -2,4 +2,6 @@
     <string name="app_name">FiChat</string>
     <string name="quit"><u>Quit</u></string>
     <string name="i_don_t_have_an_account"><u>I don\'t have an account</u></string>
+    <string name="reset_email"><u>Reset Email</u></string>
+    <string name="save"><u>Save</u></string>
 </resources>
