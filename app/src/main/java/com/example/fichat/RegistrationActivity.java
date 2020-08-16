@@ -23,6 +23,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.UploadTask;
 
@@ -98,6 +99,7 @@ public class RegistrationActivity extends AppCompatActivity {
                                                                                 Toast.makeText(ra, "Successful", Toast.LENGTH_LONG).show();
                                                                                 finish();
                                                                                 Objects.requireNonNull(mAuth.getCurrentUser()).sendEmailVerification();
+                                                                                FirebaseDatabase.getInstance().getReference().child("Users").push().setValue(new User(mAuth.getCurrentUser().getEmail(),mAuth.getCurrentUser().getDisplayName(),mAuth.getCurrentUser().getUid()));
                                                                                 startActivity(new Intent(ra, MainActivity.class));
                                                                             }
                                                                         });
