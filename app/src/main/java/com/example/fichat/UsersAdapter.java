@@ -38,7 +38,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
             @Override
             public void onClick(View view) {
                 FragmentManager manager = act.getSupportFragmentManager();
-                ConfirmDialog myDialogFragment = new ConfirmDialog(Users.get(position).getUserid());
+                ConfirmDialog myDialogFragment = new ConfirmDialog(Users.get(position));
                 myDialogFragment.show(manager, "Tag");
             }
         });

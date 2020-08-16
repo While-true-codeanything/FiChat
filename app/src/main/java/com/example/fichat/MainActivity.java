@@ -16,9 +16,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.FirebaseDatabase;
-
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
@@ -65,11 +62,6 @@ public class MainActivity extends AppCompatActivity {
                         case R.id.navigation_chats:
                             loadFragment(new ChatFragment());
                             setTitle("FiChat");
-                            ArrayList<Message> mes = new ArrayList<>();
-                            mes.add(new Message("2", "h"));
-                            mes.add(new Message("1", "h"));
-                            mes.add(new Message("3", "h"));
-                            FirebaseDatabase.getInstance().getReference().push().setValue(new Chat(mes, "ym"));
                             return true;
                         case R.id.navigation_group:
                             loadFragment(new AllUsersChat(currentUser));

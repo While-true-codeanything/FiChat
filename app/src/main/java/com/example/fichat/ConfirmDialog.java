@@ -15,10 +15,10 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class ConfirmDialog extends DialogFragment {
-    private String ousi;
+    private User user;
 
-    public ConfirmDialog(String ousi) {
-        this.ousi = ousi;
+    public ConfirmDialog(User ousi) {
+        user = ousi;
     }
 
     @NonNull
@@ -33,8 +33,13 @@ public class ConfirmDialog extends DialogFragment {
         builder.setMessage(message); // сообщение
         builder.setPositiveButton(button1String, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
+                ArrayList<Message> ak = new ArrayList<>();
+                ak.add(new Message("New Chat was created", "System"));
+                ArrayList<User> users = new ArrayList<>();
+                users.add(new User(FirebaseAuth.getInstance().getCurrentUser().getEmail(), FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), FirebaseAuth.getInstance().getCurrentUser().getUid()));
+                users.add(user);
                 FirebaseDatabase.getInstance().getReference().child("PrivateChats").push()
-                        .setValue(new Chat(new ArrayList<Message>(), FirebaseAuth.getInstance().getUid() + "&" + ousi)
+                        .setValue(new Chat(ak, users)
                         );
                 ((MainActivity) Objects.requireNonNull(getActivity())).loadFragment(new ChatFragment());
             }

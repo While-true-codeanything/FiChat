@@ -4,11 +4,11 @@ import java.util.ArrayList;
 
 public class Chat {
     private ArrayList<Message> chatlist;
-    private String chatusers;
+    private ArrayList<User> users;
 
-    public Chat(ArrayList<Message> chatlist, String chatusers) {
+    public Chat(ArrayList<Message> chatlist, ArrayList<User> users) {
         this.chatlist = chatlist;
-        this.chatusers = chatusers;
+        this.users = users;
     }
 
     public Chat() {
@@ -22,11 +22,11 @@ public class Chat {
         this.chatlist = chatlist;
     }
 
-    public String getChatusers() {
-        return chatusers;
+    public ArrayList<User> getUsers() {
+        return users;
     }
 
-    public void setChatusers(String chatusers) {
-        this.chatusers = chatusers;
+    public void setUsers(ArrayList<User> users) {
+        this.users = users;
     }
 }
