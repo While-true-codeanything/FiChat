@@ -5,27 +5,22 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class FindUserFragment extends Fragment {
     private ArrayList<User> Users;
@@ -41,8 +36,8 @@ public class FindUserFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        uslist=getActivity().findViewById(R.id.userlist);
-        uslist.setAdapter(new UsersAdapter(new ArrayList<User>()));
+        uslist = getActivity().findViewById(R.id.userlist);
+        uslist.setAdapter(new UsersAdapter(new ArrayList<User>(), ((MainActivity) getActivity())));
         FirebaseDatabase.getInstance().getReference().child("Users").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -52,7 +47,7 @@ public class FindUserFragment extends Fragment {
                     userdata.add(us);
                 }
                 Users = userdata;
-                ImageButton b=getActivity().findViewById(R.id.find);
+                ImageButton b = getActivity().findViewById(R.id.find);
                 b.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
