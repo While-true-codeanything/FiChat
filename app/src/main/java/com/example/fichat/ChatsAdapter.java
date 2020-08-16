@@ -15,13 +15,18 @@ import java.util.ArrayList;
 
 public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> {
     private ArrayList<Chat> Chats;
+    private ArrayList<String> Keys;
+    private MainActivity ma;
 
-    public ChatsAdapter(ArrayList<Chat> chats) {
+    public ChatsAdapter(ArrayList<Chat> chats, ArrayList<String> keys, MainActivity ma) {
         Chats = chats;
+        Keys = keys;
+        this.ma = ma;
     }
 
-    public void Reset(ArrayList<Chat> chats) {
+    public void Reset(ArrayList<Chat> chats, ArrayList<String> keys) {
         Chats = chats;
+        Keys = keys;
     }
 
     @Override
@@ -38,9 +43,10 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
         } else {
             holder.name.setText(Chats.get(position).getUsers().get(0).getName());
         }
-        holder.user.setOnClickListener(new View.OnClickListener() {
+        holder.chat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ma.loadFragment(new PrivateChatFragment(Keys.get(position), Chats.get(position)));
             }
         });
     }
@@ -53,13 +59,13 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView name;
         private TextView lastmes;
-        private CardView user;
+        private CardView chat;
 
         public ViewHolder(View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.username);
             lastmes = itemView.findViewById(R.id.useremail);
-            user = itemView.findViewById(R.id.user);
+            chat = itemView.findViewById(R.id.user);
         }
     }
 }

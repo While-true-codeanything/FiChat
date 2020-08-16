@@ -38,24 +38,28 @@ public class ChatFragment extends Fragment {
         setHasOptionsMenu(true);
         super.onStart();
         chatlist = getActivity().findViewById(R.id.userchatlist);
-        chatlist.setAdapter(new ChatsAdapter(new ArrayList<Chat>()));
+        chatlist.setAdapter(new ChatsAdapter(new ArrayList<Chat>(), new ArrayList<String>(), ((MainActivity) getActivity())));
         FirebaseDatabase.getInstance().getReference().child("PrivateChats").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 ArrayList<Chat> chatdata = new ArrayList<>();
+                ArrayList<String> supportKeys = new ArrayList<>();
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
                     /*Toast.makeText(getContext(),dataSnapshot.getKey(),Toast.LENGTH_LONG).show();*/
                     Chat cht = data.getValue(Chat.class);
+                    supportKeys.add(data.getKey());
                     chatdata.add(cht);
                 }
                 FirebaseUser curus = FirebaseAuth.getInstance().getCurrentUser();
                 ArrayList<Chat> curchatdata = new ArrayList<>();
-                for (Chat c : chatdata) {
-                    if ((c.getUsers().get(0).getUserid().equals(curus.getUid())) || (c.getUsers().get(1).getUserid().equals(curus.getUid()))) {
-                        curchatdata.add(c);
+                ArrayList<String> RealSupportKeys = new ArrayList<>();
+                for (int i = 0; i < chatdata.size(); i++) {
+                    if ((chatdata.get(i).getUsers().get(0).getUserid().equals(curus.getUid())) || (chatdata.get(i).getUsers().get(1).getUserid().equals(curus.getUid()))) {
+                        curchatdata.add(chatdata.get(i));
+                        RealSupportKeys.add(supportKeys.get(i));
                     }
                 }
-                ((ChatsAdapter) chatlist.getAdapter()).Reset(curchatdata);
+                ((ChatsAdapter) chatlist.getAdapter()).Reset(curchatdata, RealSupportKeys);
                 chatlist.getAdapter().notifyDataSetChanged();
             }
 
