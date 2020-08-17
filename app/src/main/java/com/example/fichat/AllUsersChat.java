@@ -46,7 +46,7 @@ public class AllUsersChat extends Fragment {
         allmessagelist = getActivity().findViewById(R.id.list);
         final LinearLayout lay = getActivity().findViewById(R.id.chatlay);
         myRef = FirebaseDatabase.getInstance().getReference();
-        allmessagelist.setAdapter(new MessagesAdapter(currentUser.getDisplayName(), new ArrayList<Message>()));
+        allmessagelist.setAdapter(new MessagesAdapter(currentUser.getDisplayName(), new ArrayList<Message>(), getActivity()));
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -87,7 +87,7 @@ public class AllUsersChat extends Fragment {
                         .setValue(new Message(input.getText().toString(),
                                 FirebaseAuth.getInstance()
                                         .getCurrentUser()
-                                        .getDisplayName())
+                                        .getDisplayName(), currentUser.getUid())
                         );
                 input.setText("");
             }

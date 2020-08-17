@@ -34,7 +34,7 @@ public class ConfirmDialog extends DialogFragment {
         builder.setPositiveButton(button1String, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 ArrayList<Message> ak = new ArrayList<>();
-                ak.add(new Message("New Chat was created", "System"));
+                ak.add(new Message("New Chat was created", "System", "logo.png"));
                 ArrayList<User> users = new ArrayList<>();
                 users.add(new User(FirebaseAuth.getInstance().getCurrentUser().getEmail(), FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), FirebaseAuth.getInstance().getCurrentUser().getUid()));
                 users.add(user);

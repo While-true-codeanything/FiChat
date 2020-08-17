@@ -1,14 +1,20 @@
 package com.example.fichat;
 
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
 
@@ -31,7 +37,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(@NonNull UsersAdapter.ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final UsersAdapter.ViewHolder holder, final int position) {
         holder.email.setText(Users.get(position).getEmail());
         holder.name.setText(Users.get(position).getName());
         holder.user.setOnClickListener(new View.OnClickListener() {
@@ -40,6 +46,15 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
                 FragmentManager manager = act.getSupportFragmentManager();
                 ConfirmDialog myDialogFragment = new ConfirmDialog(Users.get(position));
                 myDialogFragment.show(manager, "Tag");
+            }
+        });
+        FirebaseStorage.getInstance().getReference().child(Users.get(position).getUserid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Glide
+                        .with(act)
+                        .load(uri)
+                        .into(holder.img);
             }
         });
     }
@@ -52,12 +67,14 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
         private TextView name;
         private TextView email;
         private CardView user;
+        private ImageView img;
 
         public ViewHolder(View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.username);
             email = itemView.findViewById(R.id.useremail);
             user = itemView.findViewById(R.id.user);
+            img = (ImageView) itemView.findViewById(R.id.ava);
         }
     }
 }

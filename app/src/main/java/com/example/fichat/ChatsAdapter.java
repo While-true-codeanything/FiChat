@@ -1,15 +1,20 @@
 package com.example.fichat;
 
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
 
@@ -36,12 +41,30 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ChatsAdapter.ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final ChatsAdapter.ViewHolder holder, final int position) {
         holder.lastmes.setText(Chats.get(position).getChatlist().get(Chats.get(position).getChatlist().size() - 1).getMessageText());
         if ((Chats.get(position).getUsers().get(0).getUserid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))) {
             holder.name.setText(Chats.get(position).getUsers().get(1).getName());
+            FirebaseStorage.getInstance().getReference().child(Chats.get(position).getUsers().get(1).getUserid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    Glide
+                            .with(ma)
+                            .load(uri)
+                            .into(holder.ava);
+                }
+            });
         } else {
             holder.name.setText(Chats.get(position).getUsers().get(0).getName());
+            FirebaseStorage.getInstance().getReference().child(Chats.get(position).getUsers().get(0).getUserid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    Glide
+                            .with(ma)
+                            .load(uri)
+                            .into(holder.ava);
+                }
+            });
         }
         holder.chat.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,6 +82,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView name;
         private TextView lastmes;
+        private ImageView ava;
         private CardView chat;
 
         public ViewHolder(View itemView) {
@@ -66,6 +90,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
             name = itemView.findViewById(R.id.username);
             lastmes = itemView.findViewById(R.id.useremail);
             chat = itemView.findViewById(R.id.user);
+            ava = itemView.findViewById(R.id.ava);
         }
     }
 }

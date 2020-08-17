@@ -45,7 +45,7 @@ public class PrivateChatFragment extends Fragment {
     public void onStart() {
         super.onStart();
         chat = getActivity().findViewById(R.id.list);
-        chat.setAdapter(new MessagesAdapter(FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), chatdata.getChatlist()));
+        chat.setAdapter(new MessagesAdapter(FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), chatdata.getChatlist(), getActivity()));
         node = FirebaseDatabase.getInstance().getReference().child("PrivateChats").child(ChatKey).child("chatlist");
         send = getActivity().findViewById(R.id.SendButton);
         node.addValueEventListener(new ValueEventListener() {
@@ -56,6 +56,7 @@ public class PrivateChatFragment extends Fragment {
                     Message mes = data.getValue(Message.class);
                     messagedata.add(mes);
                 }
+                chatdata.setChatlist(messagedata);
                 MessagesAdapter m = (MessagesAdapter) chat.getAdapter();
                 m.datachange(messagedata);
                 chat.getAdapter().notifyDataSetChanged();
@@ -79,7 +80,7 @@ public class PrivateChatFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 EditText input = getActivity().findViewById(R.id.message);
-                chatdata.getChatlist().add(new Message(input.getText().toString(), FirebaseAuth.getInstance().getCurrentUser().getDisplayName()));
+                chatdata.getChatlist().add(new Message(input.getText().toString(), FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), FirebaseAuth.getInstance().getCurrentUser().getUid()));
                 node.setValue(chatdata.getChatlist());
                 input.setText("");
             }
