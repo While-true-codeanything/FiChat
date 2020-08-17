@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +24,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -85,7 +90,7 @@ public class Profile extends Fragment {
         tv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EditText edt2 = getActivity().findViewById(R.id.Name);
+                final EditText edt2 = getActivity().findViewById(R.id.Name);
                 UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                         .setDisplayName(edt2.getText().toString())
                         .build();
@@ -94,6 +99,31 @@ public class Profile extends Fragment {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
+                                    FirebaseDatabase.getInstance().getReference().child("Users").addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            String key = "";
+                                            for (DataSnapshot data : dataSnapshot.getChildren()) {
+                                                User us = data.getValue(User.class);
+                                                if (us.getUserid().equals(mAuth.getCurrentUser().getUid()))
+                                                    key = data.getKey();
+                                            }
+                                            FirebaseDatabase.getInstance().getReference().child("Users").child(key).child("name").setValue(edt2.getText().toString());
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                                            snackbar = Snackbar
+                                                    .make((LinearLayout) getActivity().findViewById(R.id.kr), databaseError.getMessage(), Snackbar.LENGTH_LONG)
+                                                    .setAction("Ok", new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View view) {
+                                                            snackbar.dismiss();
+                                                        }
+                                                    });
+                                            snackbar.show();
+                                        }
+                                    });
                                     Toast.makeText(getContext(), "Name Changed", Toast.LENGTH_LONG).show();
                                 } else {
                                     snackbar = Snackbar
@@ -129,7 +159,32 @@ public class Profile extends Fragment {
             public void onClick(View view) {
                 if (EditingEmail) {
                     if (isValidEmail(edt.getText().toString())) {
-                        mAuth.getCurrentUser().verifyBeforeUpdateEmail(edt.getText().toString());
+                        mAuth.getCurrentUser().updateEmail(edt.getText().toString());
+                        FirebaseDatabase.getInstance().getReference().child("Users").addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                String key = "";
+                                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                                    User us = data.getValue(User.class);
+                                    if (us.getUserid().equals(mAuth.getCurrentUser().getUid()))
+                                        key = data.getKey();
+                                }
+                                FirebaseDatabase.getInstance().getReference().child("Users").child(key).child("email").setValue(edt.getText().toString());
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                snackbar = Snackbar
+                                        .make((LinearLayout) getActivity().findViewById(R.id.kr), databaseError.getMessage(), Snackbar.LENGTH_LONG)
+                                        .setAction("Ok", new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                snackbar.dismiss();
+                                            }
+                                        });
+                                snackbar.show();
+                            }
+                        });
                         tv.setText(Html.fromHtml("<u>Reset Email</u>"));
                         edt.setEnabled(false);
                         EditingEmail = false;
