@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,15 +22,17 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-public class AllUsersChat extends Fragment {
-    private DatabaseReference myRef;
-    private RecyclerView allmessagelist;
-    private FloatingActionButton send;
+public class PrivateChatFragment extends Fragment {
     private Snackbar snackbar;
-    private FirebaseUser currentUser;
+    private RecyclerView chat;
+    private DatabaseReference node;
+    private String ChatKey;
+    private FloatingActionButton send;
+    private Chat chatdata;
 
-    public AllUsersChat(FirebaseUser currentUser) {
-        this.currentUser = currentUser;
+    public PrivateChatFragment(String chatKey, Chat cahtdata) {
+        ChatKey = chatKey;
+        this.chatdata = cahtdata;
     }
 
     @Override
@@ -43,26 +44,23 @@ public class AllUsersChat extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        allmessagelist = getActivity().findViewById(R.id.list);
-        final LinearLayout lay = getActivity().findViewById(R.id.chatlay);
-        myRef = FirebaseDatabase.getInstance().getReference();
-        allmessagelist.setAdapter(new MessagesAdapter(currentUser.getDisplayName(), new ArrayList<Message>(), getActivity()));
-        myRef.addValueEventListener(new ValueEventListener() {
+        chat = getActivity().findViewById(R.id.list);
+        chat.setAdapter(new MessagesAdapter(FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), chatdata.getChatlist(), getActivity()));
+        node = FirebaseDatabase.getInstance().getReference().child("PrivateChats").child(ChatKey).child("chatlist");
+        send = getActivity().findViewById(R.id.SendButton);
+        node.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 ArrayList<Message> messagedata = new ArrayList<Message>();
-                for (DataSnapshot data : dataSnapshot.child("AllUsersChat").getChildren()) {
-                    //Getting User object from dataSnapshot
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
                     Message mes = data.getValue(Message.class);
                     messagedata.add(mes);
                 }
-                /*Toast.makeText(ma,messagedata.get(messagedata.size()).getMessageText(),Toast.LENGTH_LONG).show();*/
-                /*allmessagelist.setAdapter(new MessagesAdapter(currentUser.getDisplayName(),messagedata));*/
-                MessagesAdapter m = (MessagesAdapter) allmessagelist.getAdapter();
+                chatdata.setChatlist(messagedata);
+                MessagesAdapter m = (MessagesAdapter) chat.getAdapter();
                 m.datachange(messagedata);
-
-                allmessagelist.getAdapter().notifyDataSetChanged();
-                allmessagelist.scrollToPosition(allmessagelist.getAdapter().getItemCount() - 1);
+                chat.getAdapter().notifyDataSetChanged();
+                chat.scrollToPosition(chat.getAdapter().getItemCount() - 1);
             }
 
             @Override
@@ -78,17 +76,12 @@ public class AllUsersChat extends Fragment {
                 snackbar.show();
             }
         });
-        send = getActivity().findViewById(R.id.SendButton);
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EditText input = (EditText) getActivity().findViewById(R.id.message);
-                myRef.child("AllUsersChat").push()
-                        .setValue(new Message(input.getText().toString(),
-                                FirebaseAuth.getInstance()
-                                        .getCurrentUser()
-                                        .getDisplayName(), currentUser.getUid())
-                        );
+                EditText input = getActivity().findViewById(R.id.message);
+                chatdata.getChatlist().add(new Message(input.getText().toString(), FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), FirebaseAuth.getInstance().getCurrentUser().getUid()));
+                node.setValue(chatdata.getChatlist());
                 input.setText("");
             }
         });

@@ -7,10 +7,12 @@ public class Message {
     private String messageText;
     private String messageUser;
     private String messageTime;
+    private String messageIcon;
 
-    public Message(String messageText, String messageUser) {
+    public Message(String messageText, String messageUser, String messageIcon) {
         this.messageText = messageText;
         this.messageUser = messageUser;
+        this.messageIcon = messageIcon;
         SimpleDateFormat formatForDateNow = new SimpleDateFormat("HH:mm dd.MM.yyyy");
         messageTime = formatForDateNow.format(new Date());
     }
@@ -40,5 +42,13 @@ public class Message {
 
     public void setMessageTime(String messageTime) {
         this.messageTime = messageTime;
+    }
+
+    public String getMessageIcon() {
+        return messageIcon;
+    }
+
+    public void setMessageIcon(String messageIcon) {
+        this.messageIcon = messageIcon;
     }
 }

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,9 +24,16 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -35,6 +43,7 @@ public class Profile extends Fragment {
     private TextView tv;
     private boolean EditingEmail;
     private Snackbar snackbar;
+    private ImageView imageView;
     static final int AVATAR_REQUEST = 66;
     StorageReference storage;
 
@@ -52,37 +61,36 @@ public class Profile extends Fragment {
     public void onStart() {
         super.onStart();
         mAuth.getCurrentUser().reload();
+        imageView = getActivity().findViewById(R.id.avatar);
         edt = getActivity().findViewById(R.id.Name);
         edt.setText(mAuth.getCurrentUser().getDisplayName());
         tv = getActivity().findViewById(R.id.Ng);
-        final ImageView imageView2 = getActivity().findViewById(R.id.avatar);
-        /*storage.child(mAuth.getCurrentUser().getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                Glide
-                        .with(getContext())
-                        .load(uri)
-                        .into(imageView2);
-            }
-        });*/
-
-        FirebaseStorage storagef = FirebaseStorage.getInstance();
-        storage = storagef.getReference();
+        storage = FirebaseStorage.getInstance().getReference();
         storage.child(mAuth.getCurrentUser().getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                if (imageView2.getDrawable() == null) {
+                if (imageView.getDrawable() == null) {
                     Glide
                             .with(getContext())
                             .load(uri)
-                            .into(imageView2);
+                            .into(imageView);
+                }
+            }
+        });
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (imageView.getDrawable() != null) {
+                    Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                    photoPickerIntent.setType("image/*");
+                    startActivityForResult(photoPickerIntent, AVATAR_REQUEST);
                 }
             }
         });
         tv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EditText edt2 = getActivity().findViewById(R.id.Name);
+                final EditText edt2 = getActivity().findViewById(R.id.Name);
                 UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                         .setDisplayName(edt2.getText().toString())
                         .build();
@@ -91,6 +99,31 @@ public class Profile extends Fragment {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
+                                    FirebaseDatabase.getInstance().getReference().child("Users").addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            String key = "";
+                                            for (DataSnapshot data : dataSnapshot.getChildren()) {
+                                                User us = data.getValue(User.class);
+                                                if (us.getUserid().equals(mAuth.getCurrentUser().getUid()))
+                                                    key = data.getKey();
+                                            }
+                                            FirebaseDatabase.getInstance().getReference().child("Users").child(key).child("name").setValue(edt2.getText().toString());
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                                            snackbar = Snackbar
+                                                    .make((LinearLayout) getActivity().findViewById(R.id.kr), databaseError.getMessage(), Snackbar.LENGTH_LONG)
+                                                    .setAction("Ok", new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View view) {
+                                                            snackbar.dismiss();
+                                                        }
+                                                    });
+                                            snackbar.show();
+                                        }
+                                    });
                                     Toast.makeText(getContext(), "Name Changed", Toast.LENGTH_LONG).show();
                                 } else {
                                     snackbar = Snackbar
@@ -125,25 +158,53 @@ public class Profile extends Fragment {
             @Override
             public void onClick(View view) {
                 if (EditingEmail) {
-                    mAuth.getCurrentUser().verifyBeforeUpdateEmail(edt.getText().toString());
-                    tv.setText(Html.fromHtml("<u>Reset Email</u>"));
-                    edt.setEnabled(false);
-                    EditingEmail = false;
+                    if (isValidEmail(edt.getText().toString())) {
+                        mAuth.getCurrentUser().updateEmail(edt.getText().toString());
+                        FirebaseDatabase.getInstance().getReference().child("Users").addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                String key = "";
+                                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                                    User us = data.getValue(User.class);
+                                    if (us.getUserid().equals(mAuth.getCurrentUser().getUid()))
+                                        key = data.getKey();
+                                }
+                                FirebaseDatabase.getInstance().getReference().child("Users").child(key).child("email").setValue(edt.getText().toString());
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                snackbar = Snackbar
+                                        .make((LinearLayout) getActivity().findViewById(R.id.kr), databaseError.getMessage(), Snackbar.LENGTH_LONG)
+                                        .setAction("Ok", new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                snackbar.dismiss();
+                                            }
+                                        });
+                                snackbar.show();
+                            }
+                        });
+                        tv.setText(Html.fromHtml("<u>Reset Email</u>"));
+                        edt.setEnabled(false);
+                        EditingEmail = false;
+                    } else {
+                        snackbar = Snackbar
+                                .make(getActivity().findViewById(R.id.prf), "Enter correct email!", Snackbar.LENGTH_LONG)
+                                .setAction("Ok", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        snackbar.dismiss();
+                                    }
+                                });
+                        snackbar.show();
+                    }
                 } else {
                     edt = getActivity().findViewById(R.id.Email);
                     edt.setEnabled(true);
                     tv.setText(Html.fromHtml("<u>Save</u>"));
                     EditingEmail = true;
                 }
-            }
-        });
-        ImageView avatar = getActivity().findViewById(R.id.avatar);
-        avatar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, AVATAR_REQUEST);
             }
         });
     }
@@ -183,5 +244,14 @@ public class Profile extends Fragment {
                     }
                 });
         }
+    }
+
+    private boolean isValidEmail(String email) {
+
+        String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
+        Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+
     }
 }
