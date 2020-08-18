@@ -96,9 +96,17 @@
     <TextView
         android:id="@+id/Qt"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
         android:text="@string/quit"
         android:textAlignment="center" />
+
+    <ProgressBar
+        android:id="@+id/indicator"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:max="100"
+        android:visibility="invisible" />
 
 </LinearLayout>

@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -57,15 +58,19 @@ public class FindUserFragment extends Fragment {
                         if(isValidEmail(query)){
                             Toast.makeText(getContext(),"Valid",Toast.LENGTH_LONG).show();
                             for(User u:  Users){
-                                if(u.getEmail().equals(query)){
-                                    list.add(u);
+                                if(u.getEmail().equals(query)) {
+                                    if (!u.getUserid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                                        list.add(u);
+                                    }
                                 }
                             }
                         }
                         else{
                             for(User u:  Users){
-                                if(u.getName().equals(query)){
-                                    list.add(u);
+                                if(u.getName().equals(query)) {
+                                    if (!u.getUserid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                                        list.add(u);
+                                    }
                                 }
                             }
                         }

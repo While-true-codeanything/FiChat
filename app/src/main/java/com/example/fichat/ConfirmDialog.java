@@ -25,7 +25,7 @@ public class ConfirmDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         String title = "Warning";
-        String message = "Do you really want to create chat with this user?";
+        String message = "Do you really want to create a new chat with this user?";
         String button1String = "Yes";
         String button2String = "Cancel";
         AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
