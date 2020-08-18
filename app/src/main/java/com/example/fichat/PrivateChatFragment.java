@@ -80,9 +80,11 @@ public class PrivateChatFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 EditText input = getActivity().findViewById(R.id.message);
-                chatdata.getChatlist().add(new Message(input.getText().toString(), FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), FirebaseAuth.getInstance().getCurrentUser().getUid()));
-                node.setValue(chatdata.getChatlist());
-                input.setText("");
+                if (!input.getText().toString().isEmpty()) {
+                    chatdata.getChatlist().add(new Message(input.getText().toString(), FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), FirebaseAuth.getInstance().getCurrentUser().getUid()));
+                    node.setValue(chatdata.getChatlist());
+                    input.setText("");
+                }
             }
         });
     }

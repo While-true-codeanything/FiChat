@@ -22,28 +22,35 @@
         android:text="Registration"
         android:textColor="#D32F2F"
         android:textSize="50sp"
-        app:layout_constraintBottom_toTopOf="@+id/Registration_Name"
+        app:layout_constraintBottom_toTopOf="@+id/Registration_Name2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/include"
         app:layout_constraintVertical_bias="0.337" />
 
-    <EditText
-        android:id="@+id/Registration_RepPassword"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/Registration_RepPassword2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="100dp"
-        android:ems="10"
-        android:hint="Repeat Password"
-        android:inputType="textPassword"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:endIconMode="password_toggle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/Registration_Password"
-        app:layout_constraintTop_toBottomOf="@+id/Registration_Password"
-        app:layout_constraintVertical_bias="0.077" />
+        app:layout_constraintStart_toStartOf="@+id/Registration_Password2"
+        app:layout_constraintTop_toBottomOf="@+id/Registration_Password2"
+        app:layout_constraintVertical_bias="0.077">
 
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/Registration_RepPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Repeat Password"
+            android:inputType="textPassword" />
+    </com.google.android.material.textfield.TextInputLayout>
     <Button
         android:id="@+id/su"
         android:layout_width="230dp"
@@ -53,46 +60,68 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Registration_RepPassword"
+        app:layout_constraintTop_toBottomOf="@+id/Registration_RepPassword2"
         app:layout_constraintVertical_bias="0.375" />
 
-    <EditText
-        android:id="@+id/Registration_Password"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/Registration_Password2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:ems="10"
-        android:hint="Password"
-        android:inputType="textPassword"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:endIconMode="password_toggle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/Registration_Email"
-        app:layout_constraintTop_toBottomOf="@+id/Registration_Email" />
+        app:layout_constraintStart_toStartOf="@+id/Registration_Email2"
+        app:layout_constraintTop_toBottomOf="@+id/Registration_Email2">
 
-    <EditText
-        android:id="@+id/Registration_Email"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/Registration_Password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Password"
+            android:inputType="textPassword" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/Registration_Email2"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Email"
-        android:inputType="textEmailAddress"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/Registration_Name"
-        app:layout_constraintTop_toBottomOf="@+id/Registration_Name"
-        app:layout_constraintVertical_bias="0.05" />
+        app:layout_constraintStart_toStartOf="@+id/Registration_Name2"
+        app:layout_constraintTop_toBottomOf="@+id/Registration_Name2"
+        app:layout_constraintVertical_bias="0.05">
 
-    <EditText
-        android:id="@+id/Registration_Name"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/Registration_Email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Email"
+            android:inputType="textEmailAddress" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/Registration_Name2"
         android:layout_width="wrap_content"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Name"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/include"
-        app:layout_constraintVertical_bias="0.255" />
+        app:layout_constraintVertical_bias="0.255">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/Registration_Name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Name" />
+    </com.google.android.material.textfield.TextInputLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
