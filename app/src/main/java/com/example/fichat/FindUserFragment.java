@@ -8,13 +8,13 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -54,22 +54,35 @@ public class FindUserFragment extends Fragment {
                         TextView tv=getActivity().findViewById(R.id.findValue);
                         String query=tv.getText().toString();
                         ArrayList<User> list=new ArrayList<>();
-                        if(isValidEmail(query)){
-                            Toast.makeText(getContext(),"Valid",Toast.LENGTH_LONG).show();
-                            for(User u:  Users){
-                                if(u.getEmail().equals(query)){
-                                    list.add(u);
+                        if (isValidEmail(query)) {
+                            for (User u : Users) {
+                                if (u.getEmail().equals(query)) {
+                                    if (!u.getUserid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                                        list.add(u);
+                                    }
+                                }
+                            }
+                        } else {
+                            for (User u : Users) {
+                                if (u.getName().toLowerCase().equals(query.toLowerCase())) {
+                                    if (!u.getUserid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                                        list.add(u);
+                                    }
                                 }
                             }
                         }
-                        else{
-                            for(User u:  Users){
-                                if(u.getName().equals(query)){
-                                    list.add(u);
-                                }
-                            }
+                        if (list.isEmpty()) {
+                            snackbar = Snackbar
+                                    .make((LinearLayout) getActivity().findViewById(R.id.kr), "No users found", Snackbar.LENGTH_LONG)
+                                    .setAction("Ok", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            snackbar.dismiss();
+                                        }
+                                    });
+                            snackbar.show();
                         }
-                        UsersAdapter a= (UsersAdapter) uslist.getAdapter();
+                        UsersAdapter a = (UsersAdapter) uslist.getAdapter();
                         a.Reset(list);
                         uslist.getAdapter().notifyDataSetChanged();
                     }

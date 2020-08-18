@@ -83,13 +83,15 @@ public class AllUsersChat extends Fragment {
             @Override
             public void onClick(View view) {
                 EditText input = (EditText) getActivity().findViewById(R.id.message);
-                myRef.child("AllUsersChat").push()
-                        .setValue(new Message(input.getText().toString(),
-                                FirebaseAuth.getInstance()
-                                        .getCurrentUser()
-                                        .getDisplayName(), currentUser.getUid())
-                        );
-                input.setText("");
+                if (!input.getText().toString().isEmpty()) {
+                    myRef.child("AllUsersChat").push()
+                            .setValue(new Message(input.getText().toString(),
+                                    FirebaseAuth.getInstance()
+                                            .getCurrentUser()
+                                            .getDisplayName(), currentUser.getUid())
+                            );
+                    input.setText("");
+                }
             }
         });
     }

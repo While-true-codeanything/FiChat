@@ -42,6 +42,7 @@ public class Profile extends Fragment {
     private EditText edt;
     private TextView tv;
     private boolean EditingEmail;
+    private boolean Loading;
     private Snackbar snackbar;
     private ImageView imageView;
     static final int AVATAR_REQUEST = 66;
@@ -57,9 +58,21 @@ public class Profile extends Fragment {
         return inflater.inflate(R.layout.profile_page, container, false);
     }
 
+    public void SwitchIndicator() {
+        if (Loading) {
+            getActivity().findViewById(R.id.indicator).setVisibility(View.INVISIBLE);
+            Loading = false;
+        } else {
+            getActivity().findViewById(R.id.indicator).setVisibility(View.VISIBLE);
+            Loading = true;
+        }
+    }
+
     @Override
     public void onStart() {
         super.onStart();
+        Loading = false;
+        SwitchIndicator();
         mAuth.getCurrentUser().reload();
         imageView = getActivity().findViewById(R.id.avatar);
         edt = getActivity().findViewById(R.id.Name);
@@ -74,6 +87,7 @@ public class Profile extends Fragment {
                             .with(getContext())
                             .load(uri)
                             .into(imageView);
+                    SwitchIndicator();
                 }
             }
         });
@@ -91,6 +105,7 @@ public class Profile extends Fragment {
             @Override
             public void onClick(View view) {
                 final EditText edt2 = getActivity().findViewById(R.id.Name);
+                SwitchIndicator();
                 UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                         .setDisplayName(edt2.getText().toString())
                         .build();
@@ -109,6 +124,7 @@ public class Profile extends Fragment {
                                                     key = data.getKey();
                                             }
                                             FirebaseDatabase.getInstance().getReference().child("Users").child(key).child("name").setValue(edt2.getText().toString());
+
                                         }
 
                                         @Override
@@ -125,7 +141,9 @@ public class Profile extends Fragment {
                                         }
                                     });
                                     Toast.makeText(getContext(), "Name Changed", Toast.LENGTH_LONG).show();
+                                    SwitchIndicator();
                                 } else {
+                                    SwitchIndicator();
                                     snackbar = Snackbar
                                             .make(getActivity().findViewById(R.id.prf), "Error! Please try again late!", Snackbar.LENGTH_LONG)
                                             .setAction("Ok", new View.OnClickListener() {
@@ -159,6 +177,7 @@ public class Profile extends Fragment {
             public void onClick(View view) {
                 if (EditingEmail) {
                     if (isValidEmail(edt.getText().toString())) {
+                        SwitchIndicator();
                         mAuth.getCurrentUser().updateEmail(edt.getText().toString());
                         FirebaseDatabase.getInstance().getReference().child("Users").addValueEventListener(new ValueEventListener() {
                             @Override
@@ -170,10 +189,12 @@ public class Profile extends Fragment {
                                         key = data.getKey();
                                 }
                                 FirebaseDatabase.getInstance().getReference().child("Users").child(key).child("email").setValue(edt.getText().toString());
+                                SwitchIndicator();
                             }
 
                             @Override
                             public void onCancelled(@NonNull DatabaseError databaseError) {
+                                SwitchIndicator();
                                 snackbar = Snackbar
                                         .make((LinearLayout) getActivity().findViewById(R.id.kr), databaseError.getMessage(), Snackbar.LENGTH_LONG)
                                         .setAction("Ok", new View.OnClickListener() {
@@ -217,6 +238,7 @@ public class Profile extends Fragment {
 
         switch (requestCode) {
             case AVATAR_REQUEST:
+                SwitchIndicator();
                 if (resultCode == RESULT_OK) {
                     Uri selectedImage = imageReturnedIntent.getData();
                     Glide
@@ -240,6 +262,7 @@ public class Profile extends Fragment {
                 }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        SwitchIndicator();
                         Toast.makeText(getContext(), "Avatar changed!", Toast.LENGTH_LONG).show();
                     }
                 });
